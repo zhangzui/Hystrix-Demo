@@ -13,5 +13,11 @@
     <artifactId>hystrix-demo</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
