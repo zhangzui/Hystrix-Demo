@@ -2,9 +2,7 @@ package com.zz.hystrix.test;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
-import rx.Observable;
-
-import java.util.concurrent.Future;
+import com.netflix.hystrix.HystrixCommandProperties;
 
 /**
  * @author zhangzuizui
@@ -14,15 +12,17 @@ public class CommandHelloWorld extends HystrixCommand {
 
 
     public CommandHelloWorld(String name) {
-        super(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"));
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"))
+                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500000)));
         this.name = name;
     }
 
+    /**
+     * 网络调用 或者其他一些业务逻辑，可能会超时或者抛异常
+     */
     @Override
     protected String run() {
-        /**
-         * 网络调用 或者其他一些业务逻辑，可能会超时或者抛异常
-         */
+        System.out.println("sss");
         return "Hello " + name + "!";
     }
 }
