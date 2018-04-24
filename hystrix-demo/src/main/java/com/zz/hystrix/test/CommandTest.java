@@ -83,17 +83,5 @@ public class CommandTest {
             }
 
         });
-
-        fWorld.subscribe((v) -> {
-            System.out.println("onNext: " + v);
-        });
-
-        // - or while also including error handling
-
-        fWorld.subscribe((v) -> {
-            System.out.println("onNext: " + v);
-        }, (exception) -> {
-            exception.printStackTrace();
-        });
     }
 }
