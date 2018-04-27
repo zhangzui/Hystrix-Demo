@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * Action0：RxJava中的一个接口，它只有一个无参call（）方法，且无返回值，同样还有Action1，Action2...Action9等，Action1封装了含有* 1 个参的call（）方法，即call（T t），Action2封装了含有 2 *个参数的call方法，即call（T1 t1，T2 t2），以此类推；
  * Func0：与Action0非常相似，也有call（）方法，但是它是有返回值的，同样也有Func0、Func1...Func9;
  */
-public class RxJavaTest {
+public class RxJavaBaseTest {
 
     public static void main(String[] args) {
 
@@ -37,66 +37,23 @@ public class RxJavaTest {
                 subscriber.onCompleted();
             }
         });
-        //2.just方法依次发送,依次发送"just1"和"just2"
-        Observable justObservable = Observable.just("just1","just2");
-
-        /**
-         * 3.from方式
-         * 注意，just()方法也可以传list，但是发送的是整个list对象，而from（）发送的是list的一个item** /
-         * 遍历list 每次发送一个
-         */
-        List<String> list = new ArrayList<>();
-        list.add("from1");
-        list.add("from2");
-        list.add("from3");
-        Observable fromObservable = Observable.from(list);
-
-        //4.defer()
-        Observable deferObservable = Observable.defer(new Func0<Observable<String>>() {
-
-            //注意此处的call方法没有Subscriber参数
-            @Override
-            public Observable<String> call() {
-                return Observable.just("deferObservable");
-            }});
-
-        //5.interval定时,每隔一秒发送一次
-        Observable intervalObservable = Observable.interval(1, TimeUnit.SECONDS);
-        //数据接收
-        Observer<String> receiver = new Observer<String>() {
-
+        Observer receiver = new Observer() {
             @Override
             public void onCompleted() {
-                //数据接收完成时调用
-                System.out.println("onCompleted");
+                System.out.println("after completed do something");
             }
 
             @Override
-            public void onError(Throwable e) {
-                //发生错误调用
+            public void onError(Throwable throwable) {
+                System.out.println("throw throwable!!!");
             }
 
             @Override
-            public void onNext(String s) {
-                //正常接收数据调用，将接收到来自sender的问候"Hi，Weavey！"
-                System.out.println(s);
+            public void onNext(Object o) {
+                System.out.println("do something!!!");
             }
         };
+
         sender.subscribe(receiver);
-        justObservable.subscribe(receiver);
-        fromObservable.subscribe(receiver);
-        deferObservable.subscribe(receiver);
-        intervalObservable.subscribe(receiver);
-
-        synchronized (RxJavaTest.class) {
-            while (true) {
-                try {
-                    RxJavaTest.class.wait();
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-
-
     }
 }
