@@ -1,6 +1,8 @@
 package com.zz.hystrix.test.simpleRx;
 
 
+import com.zz.hystrix.test.simpleRx.scheduler.MyScheduler;
+
 /**
  * @author zhangzuizui
  * @date 2018/4/27 14:37
@@ -26,6 +28,28 @@ public class MyObservable<T> {
         void call(MySubscriber<? super T> subscriber);
     }
 
+    /**
+     * 线程切换
+     * @param scheduler
+     * @return
+     */
+    public MyObservable<T> subscribeOn(final MyScheduler scheduler) {
+        return MyObservable.create(new OnSubscribe<T>() {
+            @Override
+            public void call(final MySubscriber<? super T> subscriber) {
+                subscriber.process("线程切换");
+                /**
+                 * 将事件的生产切换到新的线程。
+                 */
+                scheduler.createWorker().schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyObservable.this.onSubscribe.call(subscriber);
+                    }
+                });
+            }
+        });
+    }
     public interface Transformer<T ,R> {
         R call(T from);
     }
@@ -68,7 +92,7 @@ public class MyObservable<T> {
     }
     public <R> MyObservable<R> extendStreams(final Transformer<? super T, ? extends R> transformer){
         MyObservable myObservable = create(new ExtendStreamsBean(this,transformer));
-       /* MyObservable myObservable = create(new OnSubscribe<R>() {
+        MyObservable myObservable1 = create(new OnSubscribe<R>() {
             @Override
             public void call(final MySubscriber<? super R> subscriber) {
                 // 订阅上层的Observable
@@ -87,7 +111,45 @@ public class MyObservable<T> {
                     }
                 });
             }
-        });*/
+        });
+        return myObservable;
+    }
+
+    public <R> MyObservable<R> extendStreams1(final MyScheduler myScheduler){
+        MyObservable myObservable = create(new OnSubscribe<T>() {
+            @Override
+            public void call(final MySubscriber<? super T> subscriber) {
+                // 订阅上层的Observable
+                final MyScheduler.Worker worker = myScheduler.createWorker();
+                MyObservable.this.subscribe(new MySubscriber<T>() {
+                    @Override
+                    public void completed(final T var) {
+                        worker.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("extendStreams1===completed");
+                                subscriber.completed(var);
+                            }
+                        });
+                    }
+                    @Override
+                    public void error(Throwable var) {
+                    }
+
+                    @Override
+                    public void start(final T var) {
+                        worker.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                System.out.println("extendStreams1---start");
+                                subscriber.start(var);
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
         return myObservable;
     }
 }

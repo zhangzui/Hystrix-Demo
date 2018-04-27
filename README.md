@@ -5,3 +5,6 @@
 https://www.jianshu.com/p/5e93c9101dc5
 2、官方文档
 https://github.com/Netflix/Hystrix/wiki/How-To-Use#Reactive-Execution
+3、RXjava-demo和simple Rx的实现
+添加线程切换功能
+
