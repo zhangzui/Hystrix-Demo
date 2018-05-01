@@ -17,3 +17,6 @@ https://github.com/Netflix/Hystrix/wiki/How-To-Use#Reactive-Execution
 7.如何设计响应编程之服务降级？
 
 
+4.官方文档翻译：
+http://youdang.github.io/2016/02/05/translate-hystrix-wiki-how-it-works
+
