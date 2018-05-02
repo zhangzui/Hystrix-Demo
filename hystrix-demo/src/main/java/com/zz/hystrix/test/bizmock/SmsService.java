@@ -16,6 +16,7 @@ public class SmsService extends HystrixCommand{
     public SmsService(SmsRequestVo smsRequestVo) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("ExampleGroup"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(500))
+                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withRequestCacheEnabled(true))
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("ExampleGroup-pool"))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withCoreSize(2))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter().withMaximumSize(5))
@@ -24,7 +25,12 @@ public class SmsService extends HystrixCommand{
     }
 
     @Override
+    protected String getCacheKey() {
+        return "SmsService";
+    }
+    @Override
     protected SmsResponseVo run() throws Exception {
+        System.out.println("run-----------aaaa");
         SmsResponseVo smsResponseVo = new SmsResponseVo();
         smsResponseVo.setCode("SUCCESS-AAA");
         Thread.sleep(smsRequestVo.getTime());

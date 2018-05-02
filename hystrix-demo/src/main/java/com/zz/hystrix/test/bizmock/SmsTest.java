@@ -28,7 +28,7 @@ public class SmsTest {
             }
 
         } catch (Exception e) {
-            System.out.println("error！！！");
+            e.printStackTrace();
         }
 
     }

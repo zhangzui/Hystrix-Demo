@@ -1,5 +1,7 @@
 package com.zz.hystrix.test;
 
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixObservableCommand;
 import org.junit.Test;
 import rx.Observable;
 import rx.Observer;

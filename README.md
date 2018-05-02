@@ -154,8 +154,30 @@ public class SmsService extends HystrixCommand{
     }
 }
 ```
+通过Hystrix文档-实现原理一文，基本上可以了解到全部的运行机制和实现。
+总结一下几个步骤：
+1.创建HystrixCommand 或者 HystrixObservableCommand 对象
+2.执行命令（即上述 Command 对象包装的逻辑）
+    execute() —— 阻塞，当依赖服务响应（或者抛出异常/超时）时，返回结果
+    queue() —— 返回 Future 对象，通过该对象异步得到返回结果
+    observe() —— 返回 Observable 对象，立即发出请求，在依赖服务响应（或者抛出异常/超时）时，通过注册的 Subscriber 得到返回结果
+    toObservable() —— 返回 Observable 对象，但只有在订阅该对象时，才会发出请求，然后在依赖服务响应（或者抛出异常/超时）时，通过注册的 Subscriber 得到返回结果
+3.结果是否有缓存:如果请求结果缓存这个特性被启用，并且缓存命中，则缓存的回应会立即通过一个 Observable 对象的形式返回。
+4.请求线路（类似电路）是否是开路:当执行一个命令时，Hystrix 会先检查熔断器状态，确定请求线路是否是开路,如果请求线路是开路，Hystrix 将不会执行这个命令，而是直接使用『失败回退逻辑』
+5.线程池/请求队列/信号量占满时会发生什么?
+    如果和当前需要执行的命令相关联的线程池和请求队列（或者信号量，如果不使用线程池），Hystrix 将不会执行这个命令，而是直接使用『失败回退逻辑』
+6.使用 HystrixObservableCommand.construct() 还是 HystrixCommand.run()
+Hystrix 将根据你使用类的不同，内部使用不同的方式来请求依赖服务：
+    HystrixCommand.run() —— 返回回应或者抛出异常
+    HystrixObservableCommand.construct() —— 返回 Observable 对象，并在回应到达时通知 observers，或者回调 onError 方法通知出现异常
+若 run() 或者 construct() 方法耗时超过了给命令设置的超时阈值，执行请求的线程将抛出 TimeoutException（若命令本身并不在其调用线程内执行，则单独的定时器线程会抛出该异常）。在这种情况下，Hystrix 将会执行失败回退逻辑，并且会忽略最终（若执行命令的线程没有被中断）返回的回应。
+若命令本身并不抛出异常，并正常返回回应，Hystrix 在添加一些日志和监控数据采集之后，直接返回回应。Hystrix 在使用 run() 方法时，Hystrix 内部还是会生成一个 Observable 对象，并返回单个请求，产生一个 onCompleted 通知；而在 Hystrix 使用 construct() 时，会直接返回由 construct() 产生的 Observable 对象
+7.计算链路健康度
+Hystrix 会将请求成功，失败，被拒绝或超时信息报告给熔断器，熔断器维护一些用于统计数据用的计数器。
+这些计数器产生的统计数据使得熔断器在特定的时刻，能短路某个依赖服务的后续请求，直到恢复期结束，若恢复期结束根据统计数据熔断器判定线路仍然未恢复健康，熔断器会再次关闭线路。
+8.失败回退，或者正常响应
 
-##六.如何设计服务降级？
+##六.关键点
 
 ##参考文档
 1、Hystrix文档-实现原理：
