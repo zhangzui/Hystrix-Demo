@@ -1,6 +1,5 @@
 package com.zz.hystrix.test.simpleRx;
 
-import rx.Subscriber;
 
 /**
  * @author zhangzuizui

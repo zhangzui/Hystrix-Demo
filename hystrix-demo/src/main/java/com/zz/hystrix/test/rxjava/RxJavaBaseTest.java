@@ -23,17 +23,13 @@ public class RxJavaBaseTest {
 
         /** 1.基本数据发射模式
          * 发射完成,这种方法需要手动调用onCompleted，才会回调Observer的onCompleted方法
-         * 发射一个"create1"的String
-         * 发射一个"create2"的String
          */
         Observable<String> sender = Observable.create(new Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                //发送数据"Hi，Weavey！"
-                subscriber.onNext("Hi，Weavey！");
-                subscriber.onNext("create1");
-                subscriber.onNext("create2");
+                //发送数据
+                subscriber.onNext("{key:value}");
                 subscriber.onCompleted();
             }
         });
@@ -50,7 +46,7 @@ public class RxJavaBaseTest {
 
             @Override
             public void onNext(Object o) {
-                System.out.println("do something!!!");
+                System.out.println("get sender's data and do something!The request data is :"+o);
             }
         };
 

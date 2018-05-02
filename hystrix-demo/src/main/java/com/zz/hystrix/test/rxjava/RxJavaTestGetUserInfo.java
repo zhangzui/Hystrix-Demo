@@ -22,10 +22,9 @@ import java.util.concurrent.TimeUnit;
 public class RxJavaTestGetUserInfo {
 
     public static void main(String[] args) {
-        test001();
-    }
-
-    public static void test001(){
+        /**
+         * 创建一个Observable
+         */
         Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
@@ -38,28 +37,34 @@ public class RxJavaTestGetUserInfo {
         }).flatMap(new Func1<List<String>, Observable<String>>() {
             @Override
             public Observable<String> call(List<String> users) {
+                //查询Users
                 return Observable.from(users);
             }
         }).filter(new Func1<String,Boolean>(){
             @Override
             public Boolean call(String userName) {
+                //找到AAA的user信息
                 return userName.equals("AAA");
             }
         }).map(new Func1<String,String>(){
             @Override
             public String call(String userName) {
+                //返回AAA的其他信息
                 return userName+"222";
             }
         }).map(new Func1<String, String>() {
             @Override
             public String call(String s) {
-                return "xxxxxx";
+                //继续根据AAA信息，获取其他信息
+                return "xxxxxx"+s;
             }
         }).subscribe(new Action1<String>() {
             @Override
             public void call(String s) {
+                //最后订阅，响应结果
                 System.out.println(s);
             }
         });
     }
+
 }
