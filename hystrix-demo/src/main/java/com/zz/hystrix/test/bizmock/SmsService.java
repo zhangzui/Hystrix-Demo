@@ -24,10 +24,10 @@ public class SmsService extends HystrixCommand{
         this.smsRequestVo = smsRequestVo;
     }
 
-    @Override
-    protected String getCacheKey() {
-        return "SmsService";
-    }
+//    @Override
+//    protected String getCacheKey() {
+//        return "SmsService";
+//    }
     @Override
     protected SmsResponseVo run() throws Exception {
         System.out.println("run-----------aaaa");
