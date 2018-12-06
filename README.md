@@ -161,7 +161,6 @@ public class SmsService extends HystrixCommand{
 ```
 当超时或者超过线程池处理能力，就会触发回调降级函数。
 ### 运行机制：
-|![aaa][hystrix.png] | 运行机制|
     1.创建HystrixCommand 或者 HystrixObservableCommand 对象
     其中两种配置信息类：HystrixCommandProperties和HystrixThreadPoolProperties，分别对应的是基础配置信息和线程池的配置信息。
     HystrixCommandProperties：超时时间，缓存是否生效，是否打印日志，circuitBreaker（断路器）的请求量信息，以及统计窗口信息等；
