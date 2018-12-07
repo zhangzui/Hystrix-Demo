@@ -21,9 +21,12 @@ public class SmsServiceTimeOut extends HystrixCommand{
                 .andCommandKey(HystrixCommandKey.Factory.asKey("SmsServiceCommand"))
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("SmsServiceGroup-pool"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionTimeoutEnabled(false)//是否启用超时中断
-                        .withExecutionTimeoutInMilliseconds(100)//配置超时时间
-                        .withExecutionIsolationThreadInterruptOnTimeout(true)));//超时后是否中断
+                        //是否启用超时中断
+                        .withExecutionTimeoutEnabled(false)
+                        //配置超时时间
+                        .withExecutionTimeoutInMilliseconds(100)
+                        //超时后是否中断
+                        .withExecutionIsolationThreadInterruptOnTimeout(true)));
         this.smsRequestVo = smsRequestVo;
     }
 
